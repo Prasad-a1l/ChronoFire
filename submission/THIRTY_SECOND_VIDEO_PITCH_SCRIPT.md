@@ -1,52 +1,70 @@
 # 30-Second Video Demo & Pitch Script: ChronoFire
 **NASA Space Apps Challenge 2026 — Harmonization of MODIS and VIIRS Hot Spots**
 
-> *Note: This pitch script strictly adheres to the official 30-second video demo limit with explicit timing cues matching the NASA Space Apps submission guidelines.*
+> Important Note: NASA Space Apps Challenge disqualifies videos exceeding 30.0 seconds. A comfortable, natural English speaking rate is 2.2 to 2.4 words per second. This official script contains exactly 68 words across 5 timed segments, designed to be spoken smoothly in 28.5 seconds with 1.5 seconds of visual breathing room.
 
 ---
 
-### [0:00 - 0:02] Introduce Yourself & Team
-- **Speaker Video:** Close-up of presenter or team in front of the ChronoFire command console.
-- **On-Screen Text:** Team ChronoFire | NASA Space Apps Challenge 2026
-- **Voiceover:**
-  > *"Hello! We are Team ChronoFire, tackling the NASA Space Apps Challenge to harmonize 25 years of Earth observation fire records."*
+### Segment 1: [0:00 - 0:04] Team and Challenge Hook
+- **Spoken Words (9 words):**
+  > "Wildfire records are fractured across twenty-five years of satellites."
+- **Visual Action:**
+  Split-screen graphic: Coarse 1 km MODIS pixel splitting into seven 375 m VIIRS pixels, showing the artificial 5-fold data spike in 2012.
+- **On-Screen Lower Third:**
+  Team ChronoFire | NASA Space Apps Challenge 2026
 
 ---
 
-### [0:02 - 0:05] Lead Us In: The Challenge & Inspiration
-- **Visual:** High-contrast graphic showing split satellite images: 1 km MODIS pixel swelling into multiple 375 m VIIRS pixels, followed by a graph showing the abrupt 5x artificial step spike in 2012.
-- **Voiceover:**
-  > *"As wildfires intensify globally, satellite records are fractured between legacy MODIS and modern VIIRS sensors—creating an artificial 5-fold jump in hotspot counts that distorts real climate trends."*
+### Segment 2: [0:04 - 0:09] Project Identity
+- **Spoken Words (12 words):**
+  > "We built ChronoFire, an open-science platform reconciling MODIS and VIIRS hotspot observations."
+- **Visual Action:**
+  Fast camera zoom into ChronoFire command console with the active burning calendar matrix and satellite map.
+- **On-Screen Callout:**
+  ChronoFire // Continuous Satellite Wildfire Intelligence
 
 ---
 
-### [0:05 - 0:10] Name Your Project: Title & Tagline
-- **Visual:** Screen cut to the ChronoFire web platform header with glowing NASA badge and title:
-  `ChronoFire // NASA Active Fire Harmonization Observatory`
-- **Voiceover:**
-  > *"We built **ChronoFire**: an AI-powered harmonization engine and interactive 25-year burning activity calendar that turns fragmented satellite pixels into actionable intelligence."*
+### Segment 3: [0:09 - 0:17] Core Technology & NASA Data
+- **Spoken Words (19 words):**
+  > "Using spatio-temporal clustering and biome-calibrated quantile mapping on NASA FIRMS data, ChronoFire unifies detections into true physical fire complexes."
+- **Visual Action:**
+  Screen capture of the 25-Year Burning Calendar heatmap. User clicks on an extreme anomaly (August 2020), instantly rendering ST-DBSCAN perimeter polygons and VIIRS 375 m footprints on the Leaflet map.
 
 ---
 
-### [0:10 - 0:20] Describe Your Idea: How It Works & NASA Open Data
-- **Visual:** Dynamic screen capture of the ChronoFire live web app:
-  1. Hovering across the 25-Year Burning Activity Calendar heatmap matrix with accessible Viridis/Magma color ramps.
-  2. Clicking on an extreme fire anomaly month (e.g. August 2020) which instantly projects ST-DBSCAN clustered fire complexes and individual hotspots onto the interactive satellite map.
-  3. Seamless graph showing the reconciled continuous time series.
-- **Voiceover:**
-  > *"Using spatio-temporal clustering and biome-calibrated quantile mapping on NASA FIRMS open data, ChronoFire reconciles 1 km MODIS and 375 m VIIRS detections into a single physical continuum—revealing real-time climate anomalies and fire complex perimeters anywhere on Earth."*
+### Segment 4: [0:17 - 0:25] Operational Impact & Prediction
+- **Spoken Words (18 words):**
+  > "Our 90-day predictive risk model and standardized anomaly indices empower wildland firefighters and climate scientists with actionable intelligence."
+- **Visual Action:**
+  Clicking "Predictive Risk" tab: 90-day forecast curves, historical Z-score anomaly meter, and automated GeoJSON export.
 
 ---
 
-### [0:20 - 0:30] Look Into The Future: Impact & Vision
-- **Visual:** Map zooming across global fire regimes (Amazon, California, Australia, Punjab), transitioning to mobile/tablet interface in the hands of a wildland firefighter and dispatch operations center.
-- **Voiceover:**
-  > *"ChronoFire gives first responders, land managers, and climate scientists the clear, unbroken truth of our burning planet—protecting ecosystems, communities, and our global future. Thank you!"*
+### Segment 5: [0:25 - 0:30] Vision & Sign-Off
+- **Spoken Words (10 words):**
+  > "ChronoFire: delivering unbroken fire truth for Earth. Explore our repo."
+- **Visual Action:**
+  Closing slide with NASA Space Apps Challenge logo, live web URL, and GitHub repository: github.com/Prasad-a1l/ChronoFire.
 
 ---
 
-### Production & Recording Checklist for Team:
-1. **Adhere to the 30-second hard limit:** Time the video between 28.5s and 29.8s to avoid automatic disqualification.
-2. **Language & Subtitles:** Ensure English audio or clear English closed-caption subtitles.
-3. **Public Cloud Link:** Host on YouTube (Public or Unlisted), Google Drive (Ensure "Anyone with the link can view"), or GitHub Releases.
-4. **No Likeness of Minors:** Confirm all persons appearing in video are 18+ per NASA Space Apps rules.
+### Teleprompter & Recording Cheat-Sheet
+
+| Timestamp | Target Duration | Spoken Text | Word Count | Visual Focus |
+| :--- | :--- | :--- | :--- | :--- |
+| **0:00 - 0:04** | 4.0s | Wildfire records are fractured across twenty-five years of satellites. | 9 words | Split MODIS vs VIIRS graphic |
+| **0:04 - 0:09** | 5.0s | We built ChronoFire, an open-science platform reconciling MODIS and VIIRS hotspot observations. | 12 words | ChronoFire UI Header & Brand |
+| **0:09 - 0:17** | 8.0s | Using spatio-temporal clustering and biome-calibrated quantile mapping on NASA FIRMS data, ChronoFire unifies detections into true physical fire complexes. | 19 words | Calendar click to ST-DBSCAN map |
+| **0:17 - 0:25** | 8.0s | Our 90-day predictive risk model and standardized anomaly indices empower wildland firefighters and climate scientists with actionable intelligence. | 18 words | Predictive tab & GeoJSON export |
+| **0:25 - 0:30** | 5.0s | ChronoFire: delivering unbroken fire truth for Earth. Explore our repo. | 10 words | Title card, URL, GitHub link |
+| **Total** | **30.0s** | **Strictly Paced Script** | **68 words** | **Full Demo Progression** |
+
+---
+
+### Video Production Rules for NASA Space Apps:
+1. **Hard 30-Second Limit:** Render video at exactly 29.5 seconds to prevent automated disqualification by judging platforms.
+2. **Audio Quality:** Record voiceover with a headset mic or USB condenser; apply background noise suppression.
+3. **Subtitles / Closed Captions:** Hardcode English subtitles at the bottom center (Yellow or White text with black outline) so judges can review on mute.
+4. **Resolution:** 1080p (1920x1080) at 30fps or 60fps in MP4 (H.264 / AAC) format.
+5. **Hosting:** Upload to YouTube as "Public" or "Unlisted", or Vimeo, or Google Drive (set access to "Anyone with the link can view").
