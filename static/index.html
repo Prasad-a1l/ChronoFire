@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ChronoFire — NASA MODIS &amp; VIIRS Hotspot Harmonization Observatory</title>
+  
+  <!-- Fonts & Leaflet CSS -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+  <link rel="stylesheet" href="/static/styles.css">
+  
+  <!-- Chart.js & Leaflet JS -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+</head>
+<body>
+
+  <!-- Top Header Masthead -->
+  <header class="header">
+    <div class="brand-wrapper">
+      <div class="brand-title">
+        <span>ChronoFire</span>
+        <span class="tag">[ NASA EOSDIS / FIRMS ]</span>
+      </div>
+      <div class="brand-subtitle">Satellite Active Fire Hotspot Harmonization &amp; Climatology (2000 — 2026)</div>
+    </div>
+
+    <div class="header-badges">
+      <div class="badge badge-live">
+        <span class="pulse-dot"></span>
+        <span>STATUS: OPERATIONAL</span>
+      </div>
+      <div class="badge badge-key" title="NASA Earthdata FIRMS MAP_KEY Connected">
+        <span>API: 740971...E170</span>
+      </div>
+      <div class="badge badge-drift" title="NASA Terra Post-2020 Orbital Drift Compensation Active">
+        <span>TERRA DRIFT: COMPENSATED</span>
+      </div>
+      <div class="badge">
+        <span>SENSORS: MODIS + VIIRS</span>
+      </div>
+    </div>
+
+    <div class="btn-group">
+      <button class="btn" onclick="openModal('methodology-modal')">SCIENCE GUIDE</button>
+      <button class="btn" onclick="downloadCSV()">EXPORT CSV</button>
+      <button class="btn" onclick="downloadGeoJSON()">EXPORT GEOJSON</button>
+      <button class="btn btn-primary" onclick="exportFullPack()">INTELLIGENCE PACK</button>
+    </div>
+  </header>
+
+  <!-- Quick-Start 3-Step Guide Banner (Dismissible) -->
+  <div class="quick-guide-bar" id="quick-guide-bar">
+    <div class="guide-steps-wrap">
+      <div class="guide-step">
+        <span class="step-num">1</span>
+        <span class="step-text">Choose a <strong>Fire Regime</strong> below or draw a custom area</span>
+      </div>
+      <span class="guide-divider">&rarr;</span>
+      <div class="guide-step">
+        <span class="step-num">2</span>
+        <span class="step-text">Explore the <strong>27-Year Harmonized Matrix</strong> &amp; climate anomalies</span>
+      </div>
+      <span class="guide-divider">&rarr;</span>
+      <div class="guide-step">
+        <span class="step-num">3</span>
+        <span class="step-text">Switch to <strong>Satellite Map</strong> to examine real fire complexes &amp; footprints</span>
+      </div>
+    </div>
+    <button class="guide-dismiss" onclick="dismissQuickGuide()" title="Dismiss guide">&times;</button>
+  </div>
+
+  <!-- 1-Click Benchmark Region Pills -->
+  <div class="quick-pills-bar">
+    <span class="pills-label">BENCHMARK BIOMES:</span>
+    <div class="pills-scroll">
+      <button class="pill-btn active" data-region="amazon_basin" onclick="quickSelectRegion('amazon_basin')">Amazon Basin</button>
+      <button class="pill-btn" data-region="california_western_us" onclick="quickSelectRegion('california_western_us')">California</button>
+      <button class="pill-btn" data-region="australia_southeast" onclick="quickSelectRegion('australia_southeast')">SE Australia</button>
+      <button class="pill-btn" data-region="canada_boreal" onclick="quickSelectRegion('canada_boreal')">Canada Boreal</button>
+      <button class="pill-btn" data-region="mediterranean_basin" onclick="quickSelectRegion('mediterranean_basin')">Mediterranean</button>
+      <button class="pill-btn" data-region="indo_gangetic_plain" onclick="quickSelectRegion('indo_gangetic_plain')">Indo-Gangetic</button>
+      <button class="pill-btn" data-region="african_savanna" onclick="quickSelectRegion('african_savanna')">African Savanna</button>
+      <button class="pill-btn pill-aoi" onclick="toggleBboxDraw()">+ Draw Bounding Box</button>
+    </div>
+  </div>
+
+  <!-- Control Strip with Date Range Selectors -->
+  <section class="controls-bar">
+    <div class="control-group">
+      <label for="region-select">Region / Area of Interest</label>
+      <select id="region-select" class="select-input" onchange="onRegionChange()">
+        <option value="amazon_basin">Amazon Basin &amp; Pantanal (South America)</option>
+        <option value="california_western_us">California &amp; Western United States</option>
+        <option value="australia_southeast">Southeast Australia Bushfire Belt</option>
+        <option value="indo_gangetic_plain">Indo-Gangetic Plain (Punjab/Haryana Agriculture)</option>
+        <option value="canada_boreal">Canadian Boreal Forest &amp; Taiga</option>
+        <option value="mediterranean_basin">Southern Europe &amp; Mediterranean Basin</option>
+        <option value="african_savanna">Central &amp; Southern African Savannas</option>
+      </select>
+    </div>
+
+    <div class="control-group">
+      <label for="biome-select">Biome Regime</label>
+      <select id="biome-select" class="select-input" onchange="onBiomeChange()">
+        <option value="auto">Auto-Detect from Region</option>
+        <option value="tropical_forest">Tropical Moist Forest</option>
+        <option value="savanna_grassland">Tropical &amp; Subtropical Savannas</option>
+        <option value="mediterranean">Mediterranean Scrub / Chaparral</option>
+        <option value="temperate_forest">Temperate Mixed Forest</option>
+        <option value="boreal_forest">Boreal Forest &amp; Taiga</option>
+        <option value="cropland_agriculture">Agricultural Cropland (Post-Harvest)</option>
+      </select>
+    </div>
+
+    <!-- Explicit Date Range Selectors as mandated by problem statement -->
+    <div class="control-group">
+      <label for="start-year-select">Start Year</label>
+      <select id="start-year-select" class="select-input" onchange="onDateRangeChange()">
+        <!-- Populated dynamically via JS -->
+      </select>
+    </div>
+
+    <div class="control-group">
+      <label for="end-year-select">End Year</label>
+      <select id="end-year-select" class="select-input" onchange="onDateRangeChange()">
+        <!-- Populated dynamically via JS -->
+      </select>
+    </div>
+
+    <div class="control-group">
+      <label for="metric-select">Matrix Metric</label>
+      <select id="metric-select" class="select-input" onchange="renderCalendar()">
+        <option value="harmonized">Harmonized Hotspots (H* Index)</option>
+        <option value="anomaly">Standardized Anomaly (Z-Score vs 2001-2020)</option>
+        <option value="frp">Fire Radiative Power (MW)</option>
+        <option value="discrepancy">Raw VIIRS / MODIS Ratio</option>
+      </select>
+    </div>
+
+    <div class="control-group">
+      <label for="palette-select">Color Spectrum</label>
+      <select id="palette-select" class="select-input" onchange="renderCalendar()">
+        <option value="viridis">Viridis (Perceptually Uniform)</option>
+        <option value="magma">Magma (High Thermal Contrast)</option>
+        <option value="plasma">Plasma (High Vibrance)</option>
+        <option value="cividis">Cividis (Colorblind-Safe)</option>
+        <option value="diverging">Diverging (Suppressed / Normal / Crisis)</option>
+      </select>
+    </div>
+
+    <div class="control-group" style="margin-left: auto; flex-direction: row; gap: 8px; align-items: flex-end;">
+      <button class="btn btn-primary" onclick="queryLiveFIRMS()" id="btn-live-firms" title="Query Live Satellite Overpass Hotspots with NASA MAP_KEY">
+        QUERY LIVE OVERPASS
+      </button>
+      <button class="btn" onclick="openModal('custom-bbox-modal')">
+        CUSTOM BOUNDS
+      </button>
+    </div>
+  </section>
+
+  <!-- Main Dashboard -->
+  <main class="dashboard-grid">
+
+    <!-- KPI Ribbon -->
+    <div class="full-width stats-ribbon">
+      <div class="stat-item">
+        <span class="stat-label">Active Region</span>
+        <span id="stat-region-name" class="stat-val" style="font-size: 16px;">Amazon Rainforest</span>
+        <span id="stat-biome-name" class="stat-sub">Tropical Moist Broadleaf</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-label">Observation Window</span>
+        <span id="stat-temporal-range" class="stat-val">2000 — 2026</span>
+        <span class="stat-sub">Sensor-Invariant Continuum</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-label">Sensor Bias Factor</span>
+        <span id="stat-bias-factor" class="stat-val" style="color: var(--accent-orange);">4.20x</span>
+        <span class="stat-sub">Calibrated VIIRS / MODIS Multiplier</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-label">Climatology Departure</span>
+        <span id="stat-current-anomaly" class="stat-val" style="color: var(--accent-blue);">+1.85σ</span>
+        <span id="stat-current-severity" class="stat-sub">Elevated Fire Regime</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-label">Fire Return Cycle</span>
+        <span id="stat-fri-val" class="stat-val" style="color: var(--accent-fire);">2.4 yrs</span>
+        <span id="stat-fri-sub" class="stat-sub">Cycle Accelerated by -54%</span>
+      </div>
+    </div>
+
+    <!-- Workspace Mode Navigation Tabs -->
+    <div class="full-width workspace-tabs-bar">
+      <button class="ws-tab active" id="tab-calendar" onclick="switchWorkspace('calendar')">
+        <span class="ws-tab-icon">01</span>
+        <span>BURNING CALENDAR &amp; TRENDS</span>
+      </button>
+      <button class="ws-tab" id="tab-map" onclick="switchWorkspace('map')">
+        <span class="ws-tab-icon">02</span>
+        <span>SATELLITE MAP &amp; INCIDENTS</span>
+      </button>
+      <button class="ws-tab" id="tab-forecast" onclick="switchWorkspace('forecast')">
+        <span class="ws-tab-icon">03</span>
+        <span>PREDICTIVE RISK &amp; REGIME SHIFT</span>
+      </button>
+      <button class="ws-tab" id="tab-all" onclick="switchWorkspace('all')">
+        <span class="ws-tab-icon">04</span>
+        <span>ALL PANELS (EXECUTIVE OVERVIEW)</span>
+      </button>
+    </div>
+
+    <!-- CARD 01: Burning Activity Calendar Matrix -->
+    <div class="card full-width" id="card-calendar">
+      <div class="card-header">
+        <div>
+          <div class="card-title">
+            <span class="index-label">[ 01 ]</span>
+            <span>Harmonized Burning Activity Calendar Matrix</span>
+          </div>
+          <div class="card-subtitle">
+            Sensor-invariant time series of burning activity. Select any cell to inspect spatial cluster distributions on the geospatial console.
+          </div>
+        </div>
+        <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+          <div class="calendar-legend">
+            <span id="legend-low-label">Baseline / Low</span>
+            <div id="legend-gradient" class="legend-bar"></div>
+            <span id="legend-high-label">Peak Burning</span>
+          </div>
+          <button class="btn" onclick="exportMatrixPNG()" title="Download High-Resolution Calendar Image">EXPORT MATRIX PNG</button>
+          <button class="btn btn-primary" onclick="switchWorkspace('map')" title="Switch to Satellite Map view to inspect active fire complexes for selected month">INSPECT ON MAP</button>
+        </div>
+      </div>
+
+      <div class="calendar-container">
+        <table class="calendar-table" id="calendar-table">
+          <!-- Populated dynamically via JS -->
+        </table>
+      </div>
+    </div>
+
+    <!-- CARD 02: Sensor Step Discrepancy & Harmonization Continuum -->
+    <div class="card" id="card-discrepancy">
+      <div class="card-header">
+        <div>
+          <div class="card-title">
+            <span class="index-label">[ 02 ]</span>
+            <span>Sensor Step Discrepancy &amp; Harmonization Continuum</span>
+          </div>
+          <div class="card-subtitle">
+            Reconciles the artificial 2012/2018 sensor step increase between 1 km MODIS and 375 m VIIRS into a continuous physical baseline.
+          </div>
+        </div>
+        <button class="btn" onclick="exportChartPNG('discrepancy')" title="Download High-Resolution Chart PNG">EXPORT PNG</button>
+      </div>
+      <div class="chart-wrapper">
+        <canvas id="discrepancyChart"></canvas>
+      </div>
+    </div>
+
+    <!-- CARD 03: Climatological Baseline & Multi-Year Anomaly Envelope -->
+    <div class="card" id="card-climatology">
+      <div class="card-header">
+        <div>
+          <div class="card-title">
+            <span class="index-label">[ 03 ]</span>
+            <span>Climatological Baseline &amp; Seasonal Trajectory</span>
+          </div>
+          <div class="card-subtitle">
+            2001-2020 Multi-Year Reference Baseline (Median + 25-75th Percentiles) compared against active year.
+          </div>
+        </div>
+        <div style="display: flex; gap: 8px; align-items: center;">
+          <select id="compare-year-select" class="select-input" style="font-size: 11px; padding: 3px 8px; font-family: var(--font-mono);" onchange="updateClimatologyChart()">
+            <option value="2026">Year 2026 (Recent)</option>
+            <option value="2024">Year 2024 (El Nino)</option>
+            <option value="2020">Year 2020 (Historical Peak)</option>
+            <option value="2010">Year 2010 (Drought Event)</option>
+          </select>
+          <button class="btn" onclick="exportChartPNG('climatology')" title="Download High-Resolution Chart PNG">EXPORT PNG</button>
+        </div>
+      </div>
+      <div class="chart-wrapper">
+        <canvas id="climatologyChart"></canvas>
+      </div>
+    </div>
+
+    <!-- CARD 04: Geospatial Active Fire & Cluster Inspector -->
+    <div class="card full-width" id="card-map">
+      <div class="card-header">
+        <div>
+          <div class="card-title">
+            <span class="index-label">[ 04 ]</span>
+            <span>Geospatial Active Fire &amp; ST-DBSCAN Cluster Inspector</span>
+          </div>
+          <div class="card-subtitle" id="map-subtitle">
+            Displaying active fire detections and spatio-temporal cluster boundaries for selected observation period.
+          </div>
+        </div>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end;">
+          <div class="toggle-group">
+            <button class="toggle-btn active" id="btn-view-harmonized" onclick="setMapView('harmonized')">HARMONIZED COMPLEXES</button>
+            <button class="toggle-btn" id="btn-view-raw" onclick="setMapView('raw')">RAW SENSORS</button>
+          </div>
+          <button class="btn" onclick="zoomToActiveFireComplex()" title="Fly in to inspect tactical complex perimeters and sensor footprints">ZOOM TO COMPLEX</button>
+          <button class="btn btn-sitrep" onclick="generateSitrep()" id="btn-sitrep">GENERATE SITREP</button>
+          <button class="btn" id="btn-draw-bbox" onclick="toggleBboxDraw()">DRAW BOUNDING BOX</button>
+          <button class="btn" onclick="fitMapBounds()">RESET VIEW</button>
+          <button class="btn" onclick="switchWorkspace('calendar')">CALENDAR VIEW</button>
+        </div>
+      </div>
+
+      <div style="position: relative;">
+        <div class="map-scale-hud" id="map-scale-hud">CONTINENTAL SCALE: ACTIVE THERMAL RADIATIVE HEATMAP</div>
+        <div id="map"></div>
+      </div>
+
+      <!-- 4D Temporal Time-Lapse Control Bar -->
+      <div class="timelapse-bar" id="timelapse-bar">
+        <div class="timelapse-label">DAY FILTER</div>
+        <button class="tl-btn" id="btn-tl-play" onclick="toggleTimelapse()">PLAY</button>
+        <input type="range" id="day-scrubber" class="day-scrubber" min="1" max="31" value="1" oninput="onDayScrub(this.value)">
+        <div class="tl-day-display" id="day-display">DAY 01</div>
+        <div class="tl-label">SPEED</div>
+        <select id="tl-speed" class="tl-speed-select">
+          <option value="1200">0.5x</option>
+          <option value="800" selected>1x</option>
+          <option value="400">2x</option>
+          <option value="200">4x</option>
+        </select>
+        <button class="tl-btn" onclick="resetTimelapse()">RESET</button>
+        <div class="tl-status" id="tl-status">ALL DAYS</div>
+      </div>
+
+      <div class="sensor-legend" id="sensor-legend" style="display:none;">
+        <span class="sensor-dot modis"></span><span>MODIS (1 km)</span>
+        <span class="sensor-dot viirs"></span><span>VIIRS (375 m)</span>
+        <span id="raw-counts" style="margin-left: 12px; font-weight: 600;"></span>
+      </div>
+    </div>
+
+    <!-- CARD 05: Fire Radiative Power Distribution -->
+    <div class="card" id="card-frp">
+      <div class="card-header">
+        <div>
+          <div class="card-title">
+            <span class="index-label">[ 05 ]</span>
+            <span>Fire Radiative Power (FRP) Energy Distribution</span>
+          </div>
+          <div class="card-subtitle">
+            Instantaneous radiant energy release (Megawatts) across active fire complexes.
+          </div>
+        </div>
+        <button class="btn" onclick="exportChartPNG('frp')" title="Download High-Resolution Chart PNG">EXPORT PNG</button>
+      </div>
+      <div class="chart-wrapper">
+        <canvas id="frpChart"></canvas>
+      </div>
+    </div>
+
+    <!-- CARD 06: Operational Decision Guidance -->
+    <div class="card" id="card-guidance">
+      <div class="card-header">
+        <div>
+          <div class="card-title">
+            <span class="index-label">[ 06 ]</span>
+            <span>Operational Decision Guidance &amp; Period Triage</span>
+          </div>
+          <div class="card-subtitle">
+            Objective situational analysis for land managers, emergency responders, and carbon researchers.
+          </div>
+        </div>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 12px;">
+        <div class="decision-box" style="border-left: 3px solid var(--accent-orange);">
+          <strong style="color: var(--accent-orange);">SEASON STATUS:</strong>
+          <span id="decision-status">Currently within historical dry-season burning window. Moderate fire propagation velocity detected.</span>
+        </div>
+        <div class="decision-box" style="border-left: 3px solid var(--accent-blue);">
+          <strong style="color: var(--accent-blue);">CLIMATIC ANALOGUE:</strong>
+          <span id="decision-analog">Burning trajectory closely parallels the 2019 Amazon dry season. Preparedness level: Tier 2 Deployment.</span>
+        </div>
+        <div class="decision-box" style="border-left: 3px solid var(--accent-green);">
+          <strong style="color: var(--accent-green);">RESOURCE ALLOCATION:</strong>
+          <span>Prioritize aerial thermal reconnaissance over active complexes along southeastern perimeter. Agricultural stubble burning controls recommended.</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- CARD 07: Atmospheric Impact Estimator -->
+    <div class="card full-width" id="card-emissions">
+      <div class="card-header">
+        <div>
+          <div class="card-title">
+            <span class="index-label">[ 07 ]</span>
+            <span>Atmospheric Impact Estimator — Biomass &amp; Carbon Emissions</span>
+          </div>
+          <div class="card-subtitle">
+            FRE-based methodology (Wooster et al. 2005) + GFED4 biome-stratified emission factors. CO2, CO, PM2.5, CH4 from active fire radiative flux.
+          </div>
+        </div>
+        <button class="btn btn-primary" onclick="loadEmissions()" id="btn-emissions">COMPUTE EMISSIONS</button>
+      </div>
+      <div id="emissions-content">
+        <div class="emissions-placeholder">Select a calendar cell or click COMPUTE EMISSIONS to generate atmospheric impact analysis for the active region and period.</div>
+      </div>
+    </div>
+
+    <!-- CARD 08: 90-Day Predictive Early Warning & Fire Risk Forecast -->
+    <div class="card full-width" id="card-forecast">
+      <div class="card-header">
+        <div>
+          <div class="card-title">
+            <span class="index-label">[ 08 ]</span>
+            <span>Predictive 90-Day Early Warning Advisory &amp; Fire Risk Model</span>
+          </div>
+          <div class="card-subtitle">
+            Seasonal autoregressive projection factoring in recent anomaly momentum, climate persistence, and historical probability of extreme fire crisis.
+          </div>
+        </div>
+        <div id="forecast-advisory-badge" class="badge" style="background: #fef2f2; border-color: #fecaca; color: #dc2626; font-weight: 700;">
+          CRITICAL WILDFIRE CRISIS WATCH
+        </div>
+      </div>
+      <div class="forecast-layout">
+        <div class="forecast-summary-box">
+          <div class="forecast-summary-title">OPERATIONAL POSTURE ADVISORY</div>
+          <div class="forecast-posture" id="forecast-posture-text">
+            Pre-position aerial suppression assets; enforce total burn bans; activate Tier-3 inter-agency coordination.
+          </div>
+          <div class="forecast-metric-row">
+            <div>
+              <span class="fm-label">Current Anomaly</span>
+              <span class="fm-val" id="forecast-current-z">+1.85σ</span>
+            </div>
+            <div>
+              <span class="fm-label">Crisis Probability</span>
+              <span class="fm-val" id="forecast-max-prob" style="color: var(--accent-fire);">78.4%</span>
+            </div>
+            <div>
+              <span class="fm-label">Momentum</span>
+              <span class="fm-val" id="forecast-momentum">+0.24σ/mo</span>
+            </div>
+          </div>
+        </div>
+        <div class="forecast-cards-grid" id="forecast-cards-container">
+          <!-- Populated dynamically via JS -->
+        </div>
+      </div>
+    </div>
+
+    <!-- CARD 09: Fire Return Interval & Regime Shift Analytics -->
+    <div class="card full-width" id="card-regime-shift">
+      <div class="card-header">
+        <div>
+          <div class="card-title">
+            <span class="index-label">[ 09 ]</span>
+            <span>Fire Return Interval (FRI) &amp; Ecological Regime Shift Tracker</span>
+          </div>
+          <div class="card-subtitle">
+            Tracks multi-decade fire cycle acceleration between Era 1 (2000-2012 MODIS Baseline) and Era 2 (2013-2026 Dual-Sensor Era).
+          </div>
+        </div>
+        <div id="regime-status-badge" class="badge" style="background: #fff7ed; border-color: #fed7aa; color: #c2410c; font-weight: 700;">
+          ACCELERATING FIRE RECURRENCE
+        </div>
+      </div>
+      <div class="regime-grid">
+        <div class="regime-stat-card">
+          <div class="regime-stat-title">ERA 1 (2000 — 2012)</div>
+          <div class="regime-stat-val" id="regime-era1-fri">5.2 yrs</div>
+          <div class="regime-stat-sub">Historical Mean Return Interval</div>
+          <div class="regime-pulse-list" id="regime-era1-pulses">Pulse Years: 2005, 2010</div>
+        </div>
+        <div class="regime-stat-card">
+          <div class="regime-stat-title">ERA 2 (2013 — 2026)</div>
+          <div class="regime-stat-val" id="regime-era2-fri" style="color: var(--accent-fire);">2.4 yrs</div>
+          <div class="regime-stat-sub">Modern Mean Return Interval</div>
+          <div class="regime-pulse-list" id="regime-era2-pulses">Pulse Years: 2017, 2020, 2024</div>
+        </div>
+        <div class="regime-stat-card">
+          <div class="regime-stat-title">INTERVAL CONTRACTION</div>
+          <div class="regime-stat-val" id="regime-accel-pct" style="color: var(--accent-orange);">-53.8%</div>
+          <div class="regime-stat-sub">Fire Frequency Acceleration</div>
+          <div class="regime-pulse-list" id="regime-load-change">Annual Fire Load: +31.5%</div>
+        </div>
+        <div class="regime-interpretation-card">
+          <div class="regime-stat-title">ECOLOGICAL ASSESSMENT</div>
+          <div class="regime-interp-text" id="regime-interp-text">
+            Major fire pulses occurred every 5.2 years during 2000-2012, accelerating to once every 2.4 years during 2013-2026. This indicates a 53.8% contraction in the regional fire return interval, driven by extended drought periods and higher dry-season temperatures.
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Tooltip element -->
+  <div id="calendar-tooltip" class="tooltip-box"></div>
+
+  <!-- Modal 1: Custom Bounding Box Input -->
+  <div id="custom-bbox-modal" class="modal-overlay">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Custom Area of Interest (AOI)</h3>
+        <button class="modal-close" onclick="closeModal('custom-bbox-modal')">&times;</button>
+      </div>
+      <div class="modal-body" style="display: flex; flex-direction: column; gap: 14px;">
+        <p style="font-size: 12px; color: var(--text-secondary);">
+          Specify coordinate bounds anywhere on Earth to generate an on-demand harmonized burning activity calendar.
+        </p>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+          <div>
+            <label style="font-size: 10px; font-family: var(--font-mono); text-transform: uppercase; color: var(--text-muted); font-weight: 600;">Min Latitude</label>
+            <input type="number" step="0.1" id="custom-min-lat" class="text-input" value="-10.0" style="width: 100%;">
+          </div>
+          <div>
+            <label style="font-size: 10px; font-family: var(--font-mono); text-transform: uppercase; color: var(--text-muted); font-weight: 600;">Max Latitude</label>
+            <input type="number" step="0.1" id="custom-max-lat" class="text-input" value="-5.0" style="width: 100%;">
+          </div>
+          <div>
+            <label style="font-size: 10px; font-family: var(--font-mono); text-transform: uppercase; color: var(--text-muted); font-weight: 600;">Min Longitude</label>
+            <input type="number" step="0.1" id="custom-min-lon" class="text-input" value="-60.0" style="width: 100%;">
+          </div>
+          <div>
+            <label style="font-size: 10px; font-family: var(--font-mono); text-transform: uppercase; color: var(--text-muted); font-weight: 600;">Max Longitude</label>
+            <input type="number" step="0.1" id="custom-max-lon" class="text-input" value="-55.0" style="width: 100%;">
+          </div>
+        </div>
+        <div>
+          <label style="font-size: 10px; font-family: var(--font-mono); text-transform: uppercase; color: var(--text-muted); font-weight: 600;">Biome Regime</label>
+          <select id="custom-biome" class="select-input" style="width: 100%;">
+            <option value="tropical_forest">Tropical Moist Forest</option>
+            <option value="savanna_grassland">Tropical &amp; Subtropical Savannas</option>
+            <option value="mediterranean">Mediterranean Scrub / Chaparral</option>
+            <option value="temperate_forest">Temperate Mixed Forest</option>
+            <option value="boreal_forest">Boreal Forest &amp; Taiga</option>
+            <option value="cropland_agriculture">Agricultural Cropland</option>
+            <option value="global_default">Global Average / Generic</option>
+          </select>
+        </div>
+        <div style="margin-top: 10px; display: flex; justify-content: flex-end; gap: 8px;">
+          <button class="btn" onclick="closeModal('custom-bbox-modal')">CANCEL</button>
+          <button class="btn btn-primary" onclick="submitCustomBBox()">EXECUTE HARMONIZATION</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal 2: SITREP Modal -->
+  <div id="sitrep-modal" class="modal-overlay">
+    <div class="modal-content sitrep-modal-content" id="sitrep-modal-content">
+      <div class="modal-header">
+        <h3 id="sitrep-title">Wildfire Situational Intelligence Brief</h3>
+        <div style="display: flex; gap: 8px; align-items: center;">
+          <button class="btn btn-primary" onclick="printSitrep()">PRINT / PDF</button>
+          <button class="modal-close" onclick="closeModal('sitrep-modal')">&times;</button>
+        </div>
+      </div>
+      <div class="modal-body sitrep-body" id="sitrep-body">
+        <div class="sitrep-loading">Generating situational report...</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal 3: Scientific Methodology & Science Guide Modal -->
+  <div id="methodology-modal" class="modal-overlay">
+    <div class="modal-content" style="max-width: 720px; max-height: 88vh; display: flex; flex-direction: column;">
+      <div class="modal-header">
+        <h3>ChronoFire Scientific Methodology &amp; Mathematical Framework</h3>
+        <button class="modal-close" onclick="closeModal('methodology-modal')">&times;</button>
+      </div>
+      <div class="modal-body" style="overflow-y: auto; display: flex; flex-direction: column; gap: 16px; font-size: 12.5px; line-height: 1.6;">
+        <div>
+          <strong style="color: var(--accent-black); text-transform: uppercase; font-family: var(--font-mono); font-size: 11px;">1. The Multi-Sensor Fracture Problem</strong>
+          <p style="margin-top: 4px;">
+            MODIS (Terra/Aqua, 1 km) and VIIRS (Suomi-NPP/NOAA-20/NOAA-21, 375 m) cannot be directly compared. With a 7x finer pixel footprint area, VIIRS detects smaller, lower-intensity smoldering fires ($FRP \ge 0.5\text{ MW}$ vs MODIS $\ge 5\text{--}10\text{ MW}$), causing a fictitious 3x to 5x detection surge starting in 2012.
+          </p>
+        </div>
+
+        <div style="border-top: 1px solid var(--border); padding-top: 12px;">
+          <strong style="color: var(--accent-black); text-transform: uppercase; font-family: var(--font-mono); font-size: 11px;">2. Spatio-Temporal Event Clustering (ST-DBSCAN)</strong>
+          <p style="margin-top: 4px;">
+            Clusters discrete satellite pixel hotspots into unified physical fire complexes using great-circle haversine distance ($d \le 1.8\text{--}2.4\text{ km}$) and a 24-hour temporal window. This eliminates pixel-size artifacts by tracking real fire front perimeters.
+          </p>
+        </div>
+
+        <div style="border-top: 1px solid var(--border); padding-top: 12px;">
+          <strong style="color: var(--accent-black); text-transform: uppercase; font-family: var(--font-mono); font-size: 11px;">3. Biome-Stratified Power-Law Transfer Functions</strong>
+          <p style="margin-top: 4px;">
+            Harmonizes the overlapping co-observation record (2012-2026) using non-linear quantile mapping:
+            <code style="display: block; background: var(--bg-subtle); padding: 8px 12px; margin: 6px 0; border-radius: 2px; font-family: var(--font-mono); font-size: 12px;">H* = alpha_b * [H_VIIRS]^(beta_b)</code>
+            Calibrated across 7 ecological biomes: Tropical Forest ($\alpha=0.238, \beta=0.945$), Mediterranean Scrub ($\alpha=0.357, \beta=0.978$), Cropland ($\alpha=0.208, \beta=0.930$).
+          </p>
+        </div>
+
+        <div style="border-top: 1px solid var(--border); padding-top: 12px;">
+          <strong style="color: var(--accent-black); text-transform: uppercase; font-family: var(--font-mono); font-size: 11px;">4. NASA Terra Post-2020 Orbital Drift Compensation</strong>
+          <p style="margin-top: 4px;">
+            Since February 2020, NASA ceased inclination maneuvers for Terra. Equator crossing drifted from 10:30 AM to ~09:00 AM MLST. ChronoFire compensates for diurnal combustion depression using $D_t = 1.0 + 0.042 \times \max(0, \text{Year} - 2020)$.
+          </p>
+        </div>
+
+        <div style="border-top: 1px solid var(--border); padding-top: 12px;">
+          <strong style="color: var(--accent-black); text-transform: uppercase; font-family: var(--font-mono); font-size: 11px;">5. Climatology Reference &amp; Standardized Anomaly (Z-Score)</strong>
+          <p style="margin-top: 4px;">
+            Baseline normals derived from 2001-2020 multi-year observations:
+            <code style="display: block; background: var(--bg-subtle); padding: 8px 12px; margin: 6px 0; border-radius: 2px; font-family: var(--font-mono); font-size: 12px;">Z = (H* - Climatology_Mean) / Climatology_Std</code>
+            Categorized from Suppressed ($Z < -1.5\sigma$) to Megafire Crisis ($Z \ge +2.0\sigma$).
+          </p>
+        </div>
+      </div>
+      <div style="padding: 14px 24px; border-top: 1px solid var(--border); display: flex; justify-content: flex-end;">
+        <button class="btn btn-primary" onclick="closeModal('methodology-modal')">CLOSE GUIDE</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>

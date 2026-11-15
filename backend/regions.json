@@ -1,0 +1,120 @@
+{
+  "amazon_basin": {
+    "id": "amazon_basin",
+    "name": "Amazon Rainforest & Pantanal Basin",
+    "country": "Brazil / Bolivia / Peru",
+    "biome": "tropical_forest",
+    "bbox": [-15.0, -70.0, -2.0, -50.0],
+    "center": [-8.5, -60.0],
+    "zoom": 5,
+    "peak_months": [8, 9, 10],
+    "description": "Tropical forest deforestation, drought-driven megafires, and savanna-forest ecotone burning across South America.",
+    "historical_events": [
+      {"year": 2005, "event": "Severe Amazon Drought Fire Surge"},
+      {"year": 2010, "event": "Historic Amazon Megadrought"},
+      {"year": 2019, "event": "Global Amazon Deforestation Fire Crisis"},
+      {"year": 2020, "event": "Catastrophic Pantanal Wetland Fires"},
+      {"year": 2024, "event": "Unprecedented South American Drought & Fire Spike"}
+    ]
+  },
+  "california_western_us": {
+    "id": "california_western_us",
+    "name": "California & Western United States",
+    "country": "United States",
+    "biome": "mediterranean",
+    "bbox": [32.5, -124.5, 42.0, -114.0],
+    "center": [37.2, -119.5],
+    "zoom": 6,
+    "peak_months": [7, 8, 9, 10],
+    "description": "Mediterranean chaparral, Sierra Nevada coniferous forests, extreme Santa Ana and Diablo wind-driven wildfire complexes.",
+    "historical_events": [
+      {"year": 2008, "event": "Lightning Siege Wildfires"},
+      {"year": 2017, "event": "Tubbs & Thomas Fire Siege"},
+      {"year": 2018, "event": "Camp Fire (Paradise) & Mendocino Complex"},
+      {"year": 2020, "event": "Record Fire Season (August Complex >1M acres, 4.3M total acres)"},
+      {"year": 2021, "event": "Dixie & Caldor Fires"}
+    ]
+  },
+  "australia_southeast": {
+    "id": "australia_southeast",
+    "name": "Southeast Australia Bushfire Belt",
+    "country": "Australia",
+    "biome": "mediterranean",
+    "bbox": [-39.0, 140.0, -28.0, 154.0],
+    "center": [-34.5, 147.0],
+    "zoom": 6,
+    "peak_months": [12, 1, 2],
+    "description": "Temperate eucalyptus forests, drought-induced extreme pyroconvection, and severe heatwave fire weather.",
+    "historical_events": [
+      {"year": 2003, "event": "Canberra Megafires"},
+      {"year": 2009, "event": "Black Saturday Disaster"},
+      {"year": 2019, "event": "Black Summer Outbreak Initiation (Nov-Dec)"},
+      {"year": 2020, "event": "Black Summer Climax (>24M hectares burned nationally)"}
+    ]
+  },
+  "indo_gangetic_plain": {
+    "id": "indo_gangetic_plain",
+    "name": "Indo-Gangetic Plain (Punjab / Haryana)",
+    "country": "India",
+    "biome": "cropland_agriculture",
+    "bbox": [28.0, 73.5, 32.5, 77.5],
+    "center": [30.5, 75.5],
+    "zoom": 7,
+    "peak_months": [10, 11],
+    "description": "Intense post-monsoon agricultural crop residue burning (paddy stubble) characterized by dense sub-pixel thermal anomalies.",
+    "historical_events": [
+      {"year": 2016, "event": "Extreme Post-Monsoon Smog Crisis"},
+      {"year": 2020, "event": "Record High Agricultural Fire Counts"},
+      {"year": 2021, "event": "Intensive Farm Stubble Fires"},
+      {"year": 2024, "event": "Satellite-Monitored In-Situ Farm Residue Burns"}
+    ]
+  },
+  "canada_boreal": {
+    "id": "canada_boreal",
+    "name": "Canadian Boreal & Taiga",
+    "country": "Canada",
+    "biome": "boreal_forest",
+    "bbox": [52.0, -125.0, 62.0, -105.0],
+    "center": [57.0, -115.0],
+    "zoom": 5,
+    "peak_months": [6, 7, 8],
+    "description": "Deep peat and boreal spruce/pine forest burning with intercontinental smoke transport and high radiative energy.",
+    "historical_events": [
+      {"year": 2011, "event": "Slave Lake Wildfire"},
+      {"year": 2016, "event": "Fort McMurray Wildfire ('The Beast')"},
+      {"year": 2023, "event": "Historic Wildfire Disaster (>18.4M hectares, 5% of Canadian forests burned)"}
+    ]
+  },
+  "mediterranean_basin": {
+    "id": "mediterranean_basin",
+    "name": "Southern Europe & Mediterranean Basin",
+    "country": "Greece / Spain / Portugal / Italy",
+    "biome": "mediterranean",
+    "bbox": [36.0, -10.0, 44.0, 28.0],
+    "center": [40.0, 15.0],
+    "zoom": 5,
+    "peak_months": [7, 8, 9],
+    "description": "Summer heatwaves, drought-stressed maquis and pine woodlands across Mediterranean coastlines.",
+    "historical_events": [
+      {"year": 2007, "event": "Greek Forest Fire Disaster"},
+      {"year": 2017, "event": "Portugal Mega-Fires (Pedrógão Grande)"},
+      {"year": 2021, "event": "Evia Island & Greece Mega-Fires"},
+      {"year": 2023, "event": "Alexandroupoli Fire (Largest recorded in EU history)"}
+    ]
+  },
+  "african_savanna": {
+    "id": "african_savanna",
+    "name": "Central & Southern African Savannas",
+    "country": "Angola / Zambia / DRC",
+    "biome": "savanna_grassland",
+    "bbox": [-18.0, 12.0, -5.0, 32.0],
+    "center": [-11.5, 22.0],
+    "zoom": 5,
+    "peak_months": [6, 7, 8, 9],
+    "description": "Vast dry-season savanna burning pulse accounting for a substantial fraction of global annual burned area.",
+    "historical_events": [
+      {"year": 2010, "event": "High Savanna Burning Season"},
+      {"year": 2019, "event": "Intense Central African Fire Peak"}
+    ]
+  }
+}
