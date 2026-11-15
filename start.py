@@ -14,9 +14,11 @@ if __name__ == "__main__":
     print("  Challenge: Harmonization of MODIS and VIIRS Hot Spots")
     print("  NASA Space Apps Challenge 2026")
     print("=" * 70)
-    print("  Web Server running at: http://127.0.0.1:8000")
-    print("  API Docs available at: http://127.0.0.1:8000/docs")
+    port = int(os.environ.get("PORT", 8000))
+    host = "0.0.0.0"
+    print(f"  Web Server running at: http://{host}:{port}")
+    print(f"  API Docs available at: http://{host}:{port}/docs")
     print("  Press Ctrl+C to terminate server.")
     print("=" * 70)
 
-    uvicorn.run("backend.server:app", host="127.0.0.1", port=8000, reload=False, log_level="info")
+    uvicorn.run("backend.server:app", host=host, port=port, reload=False, log_level="info")
