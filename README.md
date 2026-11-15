@@ -117,14 +117,4 @@ D:\NASA\
 - ISRO: INSAT-3D thermal meteorological imager observations.
 
 ---
-
-## 7. NASA Space Apps Submission Deliverables
-
-All required deliverables complying with the 2026 Project Submission Guide are prepared in the `submission/` folder:
-- [Project Submission Portal Content](file:///D:/NASA/submission/PROJECT_SUBMISSION_PORTAL_CONTENT.md)
-- [Official 7-Slide Presentation Deck](file:///D:/NASA/submission/SEVEN_SLIDE_PRESENTATION_DECK.md)
-- [Official 30-Second Video Pitch Script](file:///D:/NASA/submission/THIRTY_SECOND_VIDEO_PITCH_SCRIPT.md)
-- [Scientific Methodology & Mathematical Derivations](file:///D:/NASA/submission/SCIENTIFIC_METHODOLOGY_PAPER.md)
-
----
 *Built for the 2026 NASA Space Apps Challenge - Advancing Open Science and Global Wildfire Resilience.*
